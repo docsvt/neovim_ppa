@@ -1,0 +1,16 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+  - name: Search neovim PPA repository in OE
+    ansible.builtin.shell: |
+      find /etc/apt/ -name *.list | \
+      xargs cat | \
+      grep  -q '^[[:space:]]*deb[[:blank:]+].\+neovim-ppa.\+'
+    ignore_errors: true
+    register: grep_neovim_ppa
+  - name: Check if neovim ppa exist in OE
+    ansible.builtin.assert:
+      that:
+        grep_neovim_ppa.rc == 0

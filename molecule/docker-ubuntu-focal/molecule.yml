@@ -1,0 +1,24 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+platforms:
+  - name: nvim_ppa_ubuntu-focal
+    dockerfile: ../resources/Dockerfile.j2
+    image: ubuntu-focal
+    privileged: true
+    command: sleep infinity
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+provisioner:
+  name: ansible
+  playbooks:
+    converge: ../resources/playbooks/converge.yml
+    verify: ../resources/playbooks/verify.yml
+verifier:
+  name: ansible
+lint: |
+  set -e
+  yamllint .
+  ansible-lint .

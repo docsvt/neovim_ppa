@@ -1,0 +1,7 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include coeng.neovim_ppa"
+      include_role:
+        name: "coeng.neovim_ppa"

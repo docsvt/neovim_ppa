@@ -1,0 +1,21 @@
+---
+galaxy_info:
+  author: Serguei Tokovenko
+  namespace: coeng
+  description: Add NeoVim PPA repository to Ubuntu OE
+  company: CoEng
+
+  license: MIT
+
+  min_ansible_version: "2.2"
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - jammy
+        - focal
+        - bionic
+
+  galaxy_tags: []
+
+dependencies: []

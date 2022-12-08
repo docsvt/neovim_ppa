@@ -1,0 +1,25 @@
+---
+# tasks file for neovim_ppa
+- name: import assert.yml
+  ansible.builtin.import_tasks: assert.yml
+  run_once: true
+  delegate_to: localhost
+
+- name: Gather os specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+    - "{{ ansible_distribution }}.yml"
+  tags: vars
+
+- name: Add prerequisites packages
+  ansible.builtin.apt:
+    name: "{{ packages }}"
+    update_cache: true
+    state: present
+
+- name: Add neovim stable repository from PPA with signing key on Ubuntu target
+  ansible.builtin.apt_repository:
+    repo: ppa:neovim-ppa/stable
+    state: present
+    update_cache: true
