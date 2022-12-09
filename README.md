@@ -1,4 +1,4 @@
-Role Name
+Role neovim-ppa
 =========
 
 Install neovim ppa repository for Ubuntu target
