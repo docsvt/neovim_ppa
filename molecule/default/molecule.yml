@@ -13,6 +13,7 @@ platforms:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
 provisioner:
   name: ansible
+  log: true
   playbooks:
     converge: ../resources/playbooks/converge.yml
     verify: ../resources/playbooks/verify.yml

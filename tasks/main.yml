@@ -18,8 +18,57 @@
     update_cache: true
     state: present
 
-- name: Add neovim stable repository from PPA with signing key on Ubuntu target
+- name: Define reporsitory add method
+  set_fact:
+    apt_repo_method: "direct"
+  when:
+    - ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int > 20
+
+- name: Add direct apt repository
+  block:
+    - name: Search installed apt key in trusted location
+      ansible.builtin.shell: |
+        export GNUPGHOME="$(mktemp -d)"
+        ls /etc/apt/trusted.gpg.d/* | \
+        xargs  -n 1 gpg -k --no-default-keyring --keyring | \
+        grep -q {{ key_fingerprint }}
+      ignore_errors: true
+      register: search_apt_key_out
+      changed_when: true
+
+    - name: Is apt key presented
+      set_fact:
+        neovim_ppa_trusted_key_presented: true
+      when: search_apt_key_out.rc == 0
+
+    - name: Add an apt key by fingerprint from a keyserver
+      ansible.builtin.shell: |
+        export GNUPGHOME="$(mktemp -d)"
+        gpg --recv-keys --keyserver {{ key_server }} {{ key_fingerprint }}
+        gpg --export {{ key_fingerprint }} > {{ key_file }}
+      when: neovim_ppa_trusted_key_presented is false
+      changed_when: true
+
+    - name: Add NeoVIM PPA repository with installed key
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64 signed-by={{ key_file }}] https://ppa.launchpadcontent.net/neovim-ppa/stable/ubuntu {{ ansible_distribution_release }} main"
+        state: present
+        update_cache: true
+      when: neovim_ppa_trusted_key_presented is false
+
+    - name: Add NeoVIM PPA repository with trusted key
+      ansible.builtin.apt_repository:
+        repo: "deb https://ppa.launchpadcontent.net/neovim-ppa/stable/ubuntu {{ ansible_distribution_release }} main"
+        state: present
+        update_cache: true
+      when: noevim_ppa_trusted_key_presented is true
+  when:
+    - apt_repo_method == "direct"
+
+- name: Add neovim stable repository from PPA and install its signing key on Ubuntu target
   ansible.builtin.apt_repository:
     repo: ppa:neovim-ppa/stable
     state: present
     update_cache: true
+  when:
+    - apt_repo_method == "indirect"

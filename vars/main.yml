@@ -1,2 +1,7 @@
 ---
 # vars file for neovim_ppa
+neovim_ppa_trusted_key_presented: false
+apt_repo_method: "indirect"
+key_server:  "keyserver.ubuntu.com"
+key_fingerprint: "9DBB0BE9366964F134855E2255F96FCF8231B6DD"
+key_file: "/usr/share/keyrings/neovim-ppa-ubuntu-stable.gpg"
